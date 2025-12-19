@@ -30,21 +30,21 @@ export const useAudioPlayer = () => {
   // Initialize audio element
   useEffect(() => {
     audioRef.current = new Audio();
-    
+
     const audio = audioRef.current;
-    
+
     const handleEnded = () => {
       setState(prev => ({ ...prev, isPlaying: false, progress: 0 }));
     };
-    
+
     const handleLoadStart = () => {
       console.log('Audio loading started');
     };
-    
+
     const handleCanPlay = () => {
       console.log('Audio can start playing');
     };
-    
+
     const handleError = (e: Event) => {
       console.error('Audio error:', e);
       setState(prev => ({ ...prev, isPlaying: false }));
@@ -301,18 +301,20 @@ export const useAudioPlayer = () => {
   }, [state.isPlaying, state.currentTrack, state.progress]);
 
   const skipNext = useCallback(() => {
-    console.log('Skip next - not implemented yet');
-    // TODO: Implement next track logic
+    console.log('Skip next');
+    // This will be connected to queue in the AudioPlayerProvider wrapper
+    // For now, just log
   }, []);
 
   const skipPrevious = useCallback(() => {
-    console.log('Skip previous - not implemented yet');
-    // TODO: Implement previous track logic
+    console.log('Skip previous');
+    // This will be connected to queue in the AudioPlayerProvider wrapper
+    // For now, just log
   }, []);
 
   const seek = useCallback((position: number) => {
     setState(prev => ({ ...prev, progress: position }));
-    
+
     if (audioRef.current && audioRef.current.duration) {
       audioRef.current.currentTime = (position / 100) * audioRef.current.duration;
     }
@@ -320,7 +322,7 @@ export const useAudioPlayer = () => {
 
   const setVolume = useCallback((volume: number) => {
     setState(prev => ({ ...prev, volume }));
-    
+
     if (audioRef.current) {
       audioRef.current.volume = volume / 100;
     }
@@ -353,7 +355,7 @@ export const useAudioPlayer = () => {
       audioRef.current.pause();
       audioRef.current.src = '';
     }
-    
+
     setState({
       currentTrack: null,
       isPlaying: false,
@@ -374,7 +376,7 @@ export const useAudioPlayer = () => {
     isShuffled: state.isShuffled,
     repeatMode: state.repeatMode,
     isMinimized: state.isMinimized,
-    
+
     // Actions
     playTrack,
     togglePlay,

@@ -3,8 +3,11 @@ import { Card, CardContent } from './card';
 import {
   FaClock
 } from 'react-icons/fa';
+import { FiPlus } from 'react-icons/fi';
 import { ITrack } from '@/types';
 import { getImageUrl, cn } from '@/utils';
+import { useQueue } from '@/context/queueContext';
+import { Button } from './button';
 
 interface TrackCardProps {
   track: ITrack;
@@ -24,6 +27,7 @@ export const TrackCard: React.FC<TrackCardProps> = ({
   className
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const { addToQueue, openQueuePanel } = useQueue();
   const [imageLoaded, setImageLoaded] = useState(false);
 
   const { poster_path, original_title: title, name, artist, album, duration } = track;
@@ -36,12 +40,18 @@ export const TrackCard: React.FC<TrackCardProps> = ({
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  const handleAddToQueue = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    addToQueue(track);
+    openQueuePanel();
+  };
+
 
   const cardHeight = variant === 'compact' ? 'h-52' : variant === 'featured' ? 'h-84' : 'h-80';
   const imageHeight = variant === 'compact' ? 160 : variant === 'featured' ? 240 : 200;
 
   return (
-    <Card 
+    <Card
       className={cn(
         "group relative transition-all duration-300 ease-out overflow-hidden",
         "hover:scale-[1.03] hover:-translate-y-2 cursor-pointer",
@@ -61,10 +71,10 @@ export const TrackCard: React.FC<TrackCardProps> = ({
         <div className="relative overflow-hidden rounded-lg mb-3">
           {/* Loading skeleton */}
           {!imageLoaded && (
-            <div className="absolute inset-0 bg-gray-200 dark:bg-hover-gray animate-pulse rounded-lg" 
-                 style={{ height: imageHeight }} />
+            <div className="absolute inset-0 bg-gray-200 dark:bg-hover-gray animate-pulse rounded-lg"
+              style={{ height: imageHeight }} />
           )}
-          
+
           {/* Album artwork */}
           <img
             src={getImageUrl(poster_path)}
@@ -86,6 +96,22 @@ export const TrackCard: React.FC<TrackCardProps> = ({
             "absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent transition-opacity duration-300 rounded-lg",
             isHovered ? "opacity-100" : "opacity-0"
           )} />
+
+          {/* Add to Queue button */}
+          <Button
+            onClick={handleAddToQueue}
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "absolute top-2 right-2 w-8 h-8 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm",
+              "text-gray-700 dark:text-gray-200 hover:bg-blue-600 hover:text-white",
+              "shadow-lg transition-all duration-200",
+              isHovered ? "opacity-100 scale-100" : "opacity-0 scale-90"
+            )}
+            title="Add to Queue"
+          >
+            <FiPlus className="w-4 h-4" />
+          </Button>
         </div>
 
         {/* Track information */}
@@ -98,7 +124,7 @@ export const TrackCard: React.FC<TrackCardProps> = ({
           )}>
             {displayTitle}
           </h3>
-          
+
           {/* Artist name */}
           <p className={cn(
             "text-gray-600 dark:text-text-secondary truncate font-medium",
